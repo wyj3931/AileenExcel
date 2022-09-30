@@ -1,11 +1,9 @@
 import os
-from enum import Enum
-from openpyxl import Workbook, load_workbook
-import openpyxl.utils.cell
-from openpyxl.cell import read_only
+from openpyxl import load_workbook
 
 
-def handleups(fullpath, select_filename, tipps_value, root, progressbar):
+
+def handle_ups(fullpath, select_filename, tipps_value, root, progressbar):
     # openpyxl 索引从1开始
     col_list = []
     col_list1 = [('发票号码', 6, 1),
@@ -17,7 +15,7 @@ def handleups(fullpath, select_filename, tipps_value, root, progressbar):
                  ('子单号', 21, 7),
                  ('包裹数', 19, 8),
                  ('计费重量KG', 29, 9),
-                 ('收件人国家', 82, 10),
+                 ('收件人国家', 24, 10),
                  ('K5打单金额', 25, 11)]
     col_list2 = []  # 费用类型
     col_list3_part = [('交易货币代码', 51),
@@ -32,13 +30,13 @@ def handleups(fullpath, select_filename, tipps_value, root, progressbar):
     col_fee_type = 46  # index从1开始
     col_cost = 53  # 附加费
 
-    print('handlesups path:', fullpath)
+    # print('handlesups path:', fullpath)
 
     # df = pd.read_excel(str(fullpath), sheet_name=0)  # 打开一个xlsx文件
     # nrows = df.shape[0]  # 返回df的行数
     # ncols = df.shape[1]  # 列数
 
-    print(os.path.splitext(select_filename)[1])
+    # print(os.path.splitext(select_filename)[1])
     if os.path.splitext(select_filename)[1] == '.xlsm':
         wb = load_workbook(fullpath, read_only=False, keep_vba=True)  # 坑！！！xlsm文件True，xlsx文件False
     else:
@@ -73,7 +71,7 @@ def handleups(fullpath, select_filename, tipps_value, root, progressbar):
         temp_list.append(len(col_list1) + len(col_list2) + i + 1)
         col_list3.append(tuple(temp_list))
 
-    print(col_list2)
+    # print(col_list2)
 
     # 合并col_list
     col_list.extend(col_list1)
@@ -84,13 +82,20 @@ def handleups(fullpath, select_filename, tipps_value, root, progressbar):
     try:
         wb.get_sheet_by_name('已处理')
         wb.remove(wb['已处理'])
-        print('删除之前生成的sheet')
+        # print('删除之前生成的sheet')
     except KeyError:
         pass
 
-    print('新建sheet')
+    # print('新建sheet')
     wb.create_sheet('已处理')
     new_ws = wb.get_sheet_by_name('已处理')
+
+    # 判断是否是对应的文件
+    if ws['U1'].value != '追踪编号':
+        tipps_value.set('文件格式不正确')
+        root.update()
+        return 'file false'
+
     for i in range(len(col_list)):
         new_ws.cell(1, col_list[i][2]).value = col_list[i][0]
     # 按行读取，第一行是标题行
@@ -118,10 +123,11 @@ def handleups(fullpath, select_filename, tipps_value, root, progressbar):
                     try:
                         new_ws.cell(new_max_row, fee[2]).value = float(new_ws.cell(new_max_row, fee[2]).value) + float(ws.cell(i, col_cost).value)
                     except ValueError:
-                        print(new_max_row)
-                        print(fee[2])
-                        print(new_ws.cell(new_max_row, fee[2]).value)
-                        print(ws.cell(i, col_cost).value)
+                        pass
+                        # print(new_max_row)
+                        # print(fee[2])
+                        # print(new_ws.cell(new_max_row, fee[2]).value)
+                        # print(ws.cell(i, col_cost).value)
             if ws.cell(i, col_list3[1][1]).value != 0:
                 # 主单号总金额
                 new_ws.cell(new_max_row, col_list3[1][2]).value = float(new_ws.cell(new_max_row, col_list3[1][2]).value) + float(ws.cell(i, col_list3[1][1]).value)
