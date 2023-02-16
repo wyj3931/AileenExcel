@@ -38,7 +38,20 @@ def handle_k5(fullpath, select_filename, tipps_value, root, progressbar):
         return 'file false'
 
     # 进行数据处理
-    copy_row(1, 1, ws, new_ws)
+    # copy_row(1, 1, ws, new_ws)
+    new_ws.cell(row=1, column=1, value=ws[1][0].value)
+    new_ws.cell(row=1, column=2, value=ws[1][1].value)
+    new_ws.cell(row=1, column=3, value=ws[1][2].value)
+    new_ws.cell(row=1, column=4, value=ws[1][3].value)
+    new_ws.cell(row=1, column=5, value=ws[1][4].value)
+    new_ws.cell(row=1, column=6, value=ws[1][5].value)
+    new_ws.cell(row=1, column=7, value=ws[1][8].value)
+    new_ws.cell(row=1, column=8, value=ws[1][11].value)
+    new_ws.cell(row=1, column=9, value=ws[1][46].value)
+    new_ws.cell(row=1, column=10, value=ws[1][47].value)
+    new_ws.cell(row=1, column=11, value=ws[1][49].value)
+    new_ws.cell(row=1, column=12, value=ws[1][50].value)
+    new_ws.cell(row=1, column=13, value=ws[1][51].value)
 
     for i in range(2, maxrow+1):
 
@@ -52,9 +65,20 @@ def handle_k5(fullpath, select_filename, tipps_value, root, progressbar):
         # print(tracking_nos_list)
         for tracking_no in tracking_nos_list:
             new_maxrow = new_ws.max_row
-            copy_row(i, new_maxrow + 1, ws, new_ws)
+            # copy_row(i, new_maxrow + 1, ws, new_ws)
+            new_ws.cell(row=new_maxrow + 1, column=1, value=old_row[0].value)
+            new_ws.cell(row=new_maxrow + 1, column=2, value=old_row[1].value)
+            new_ws.cell(row=new_maxrow + 1, column=3, value=old_row[2].value)
+            new_ws.cell(row=new_maxrow + 1, column=4, value=old_row[3].value)
+            new_ws.cell(row=new_maxrow + 1, column=5, value=old_row[4].value)
             new_ws.cell(row=new_maxrow + 1, column=6, value=tracking_no)
-
+            new_ws.cell(row=new_maxrow + 1, column=7, value=old_row[8].value)
+            new_ws.cell(row=new_maxrow + 1, column=8, value=old_row[11].value)
+            new_ws.cell(row=new_maxrow + 1, column=9, value=old_row[46].value)
+            new_ws.cell(row=new_maxrow + 1, column=10, value=old_row[47].value)
+            new_ws.cell(row=new_maxrow + 1, column=11, value=old_row[49].value)
+            new_ws.cell(row=new_maxrow + 1, column=12, value=old_row[50].value)
+            new_ws.cell(row=new_maxrow + 1, column=13, value=old_row[51].value)
     try:
         wb.save(fullpath)
         wb.close()
