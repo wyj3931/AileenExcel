@@ -183,7 +183,7 @@ def handle_wlyups(fullpath, select_filename, tipps_value, root, progressbar):
             for main_cost_i in range(len(col_list1)+1, len(col_list1)+len(col_list2)+1):
                 # print(new_ws.cell(1, main_cost_i).value)
                 # print(new_ws.cell(new_max_row, main_cost_i).value)
-                if "Tax" not in new_ws.cell(1, main_cost_i).value:
+                if "19.000 % Tax" != new_ws.cell(1, main_cost_i).value:
                     main_cost = float(new_ws.cell(new_max_row, main_cost_i).value)+main_cost
             new_ws.cell(new_max_row, main_order_cost_new_col).value = main_cost
 
