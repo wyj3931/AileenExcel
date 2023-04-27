@@ -59,7 +59,6 @@ def handle_k5(fullpath, select_filename, tipps_value, root, progressbar):
     new_ws.cell(row=1, column=11, value=ws[1][10].value)
     new_ws.cell(row=1, column=12, value=ws[1][11].value)
     new_ws.cell(row=1, column=13, value=ws[1][12].value)
-    new_ws.cell(row=1, column=14, value=ws[1][13].value)
 
     for i in range(2, maxrow+1):
 
@@ -94,7 +93,6 @@ def handle_k5(fullpath, select_filename, tipps_value, root, progressbar):
             new_ws.cell(row=new_maxrow + 1, column=11, value=old_row[10].value)
             new_ws.cell(row=new_maxrow + 1, column=12, value=old_row[11].value)
             new_ws.cell(row=new_maxrow + 1, column=13, value=old_row[12].value)
-            new_ws.cell(row=new_maxrow + 1, column=14, value=old_row[13].value)
 
     try:
         wb.save(fullpath)
