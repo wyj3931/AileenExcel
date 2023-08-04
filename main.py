@@ -3,6 +3,8 @@ from tkinter import filedialog
 from tkinter import ttk
 import os
 import time
+
+from dhl import handle_dhl
 from ups import handle_ups
 from k5 import handle_k5
 from wlyups import handle_wlyups
@@ -40,6 +42,7 @@ def handle():
     radio1['state'] = 'disable'
     radio2['state'] = 'disable'
     radio3['state'] = 'disable'
+    radio4['state'] = 'disable'
 
     # print("start")
     start_time = time.time()
@@ -51,6 +54,8 @@ def handle():
         result = handle_k5(fullpath, select_filename, tipps_value, root, progressbar)
     elif radio.get() == 3:
         result = handle_wlyups(fullpath, select_filename, tipps_value, root, progressbar)
+    elif radio.get() == 4:
+        result = handle_dhl(fullpath, select_filename, tipps_value, root, progressbar)
 
     if result == 'finish':
         end_time = time.time()
@@ -63,13 +68,14 @@ def handle():
     radio1['state'] = 'normal'
     radio2['state'] = 'normal'
     radio3['state'] = 'normal'
+    radio4['state'] = 'normal'
 
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     root = tk.Tk()
     root.title("Excel账单处理程序")
-    root.geometry("320x180")
+    root.geometry("500x180")
     root.resizable(width=False, height=False)
 
     # 初始化Entry控件的textvariable属性值
@@ -94,6 +100,9 @@ if __name__ == '__main__':
 
     radio3 = tk.Radiobutton(root, text="WLY-UPS", variable=radio, value=3)
     radio3.grid(row=0, column=3, pady=(10, 0))
+
+    radio4 = tk.Radiobutton(root, text="DHL", variable=radio, value=4)
+    radio4.grid(row=0, column=4, pady=(10, 0))
 
     file_button = tk.Button(root, text="选择文件", command=select_file, width=10)
     file_button.grid(row=1, column=0, padx=(10, 0), pady=10)
