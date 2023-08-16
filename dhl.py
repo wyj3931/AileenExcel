@@ -25,13 +25,6 @@ def handle_dhl(fullpath, select_filename, tipps_value, root, progressbar):
     col_fee_type = 11  # 原表费用类型位置，index从1开始
     col_cost = 27  # 附加费
 
-    # print('handlesups path:', fullpath)
-
-    # df = pd.read_excel(str(fullpath), sheet_name=0)  # 打开一个xlsx文件
-    # nrows = df.shape[0]  # 返回df的行数
-    # ncols = df.shape[1]  # 列数
-
-    # print(os.path.splitext(select_filename)[1])
     if os.path.splitext(select_filename)[1] == '.xlsm':
         wb = load_workbook(fullpath, read_only=False, keep_vba=True)  # 坑！！！xlsm文件True，xlsx文件False
     else:
@@ -52,6 +45,7 @@ def handle_dhl(fullpath, select_filename, tipps_value, root, progressbar):
     # 去重
     list_fee_type = list(set(list_fee_type))
     list_fee_type.remove("Prod")
+    list_fee_type = ["Charge Amount", "Extra Charge Amount"]
 
 
     # 将费用类型赋值给col_list2
@@ -108,21 +102,38 @@ def handle_dhl(fullpath, select_filename, tipps_value, root, progressbar):
             # 如果Identcode单号相同
             for fee in col_list2:
                 #  附加费用遍历
-                if ws.cell(i, fee[1]).value == fee[0]:
-                    if new_ws.cell(new_max_row, fee[2]).value is None:
-                        new_ws.cell(new_max_row, fee[2]).value = 0
-                    if ws.cell(i, col_cost).value is None:
-                        ws.cell(i, col_cost).value = 0
-                    # print(new_ws.cell(new_max_row, fee[2]).value)
-                    # print(ws.cell(i, col_cost).value)
-                    try:
-                        new_ws.cell(new_max_row, fee[2]).value = float(new_ws.cell(new_max_row, fee[2]).value) + float(ws.cell(i, col_cost).value)
-                    except ValueError:
-                        pass
-                        # print(new_max_row)
-                        # print(fee[2])
-                        # print(new_ws.cell(new_max_row, fee[2]).value)
-                        # print(ws.cell(i, col_cost).value)
+                if fee[0] == "Charge Amount":
+                    # print(ws.cell(i, fee[1]).value)
+                    if len(str(ws.cell(i, fee[1]).value)) == 9:
+
+                        if new_ws.cell(new_max_row, fee[2]).value is None:
+                            new_ws.cell(new_max_row, fee[2]).value = 0
+                        if ws.cell(i, col_cost).value is None:
+                            ws.cell(i, col_cost).value = 0
+
+                        try:
+                            new_ws.cell(new_max_row, fee[2]).value = float(new_ws.cell(new_max_row, fee[2]).value) + float(ws.cell(i, col_cost).value)
+                        except ValueError:
+                            pass
+                            # print(new_max_row)
+                            # print(fee[2])
+                            # print(new_ws.cell(new_max_row, fee[2]).value)
+                            # print(ws.cell(i, col_cost).value)
+                if fee[0] == "Extra Charge Amount":
+                    if len(str(ws.cell(i, fee[1]).value)) < 9:
+                        if new_ws.cell(new_max_row, fee[2]).value is None:
+                            new_ws.cell(new_max_row, fee[2]).value = 0
+                        if ws.cell(i, col_cost).value is None:
+                            ws.cell(i, col_cost).value = 0
+
+                        try:
+                            new_ws.cell(new_max_row, fee[2]).value = float(new_ws.cell(new_max_row, fee[2]).value) + float(ws.cell(i, col_cost).value)
+                        except ValueError:
+                            pass
+                            # print(new_max_row)
+                            # print(fee[2])
+                            # print(new_ws.cell(new_max_row, fee[2]).value)
+                            # print(ws.cell(i, col_cost).value)
             # print("total:"+str(col_list3[0][1]))
             if ws.cell(i, col_list3[0][1]).value != 0:
                 # 主单号总金额
@@ -132,8 +143,12 @@ def handle_dhl(fullpath, select_filename, tipps_value, root, progressbar):
             for x in range(len(col_list1)):
                 new_ws.cell(new_max_row + 1, col_list1[x][2]).value = ws.cell(i, col_list1[x][1]).value
             for fee in col_list2:
-                if ws.cell(i, fee[1]).value == fee[0]:
-                    new_ws.cell(new_max_row + 1, fee[2]).value = ws.cell(i, col_cost).value
+                if fee[0] == "Charge Amount":
+                    if len(str(ws.cell(i, fee[1]).value)) == 9:
+                        new_ws.cell(new_max_row + 1, fee[2]).value = ws.cell(i, col_cost).value
+                if fee[0] == "Extra Charge Amount":
+                    if len(str(ws.cell(i, fee[1]).value)) < 9:
+                        new_ws.cell(new_max_row + 1, fee[2]).value = ws.cell(i, col_cost).value
             for x in range(len(col_list3)):
                 new_ws.cell(new_max_row + 1, col_list3[x][2]).value = ws.cell(i, col_list3[x][1]).value
             # print(ws.cell(i, 53).value)

@@ -16,7 +16,8 @@ def handle_wlyups(fullpath, select_filename, tipps_value, root, progressbar):
                  ('主单号', 14, 8),
                  ('子单号', 21, 9),
                  ('包裹数', 19, 10),
-                 ('计费重量KG', 29, 11)]
+                 ('计费重量KG', 29, 11),
+                 ('地区', 34, 12)]
 
     col_list2 = []  # 所有费用类型
     col_list3_part = [('交易货币代码', 51),
