@@ -191,7 +191,7 @@ def handle_dhl(fullpath, select_filename, tipps_value, root, progressbar):
 
     # 计算价格
     new_ws.cell(1, len(col_list) + 1).value = "按报价表首重"  # price1
-    new_ws.cell(1, len(col_list) + 2).value = "按报价表首重"  # price2
+    new_ws.cell(1, len(col_list) + 2).value = "按报价表续重"  # price2
     new_ws.cell(1, len(col_list) + 3).value = "按报价表运费"  # price3
     new_ws.cell(1, len(col_list) + 4).value = "按报价表总金额"  # price4
     new_ws.cell(1, len(col_list) + 5).value = "旺季附加费"
@@ -384,6 +384,8 @@ def handle_dhl(fullpath, select_filename, tipps_value, root, progressbar):
                 elif str(new_ws.cell(i, 7).value) == "捷克":
                     price1 = 4.89
                     price2 = (weight-1)*0.24
+            price4 = price1+price2
+
         new_ws.cell(i, len(col_list) + 1).value = price1
         new_ws.cell(i, len(col_list) + 2).value = price2
         new_ws.cell(i, len(col_list) + 3).value = price3
