@@ -1,5 +1,6 @@
 import os
 from openpyxl import load_workbook
+from datetime import date,datetime
 
 
 
@@ -208,183 +209,401 @@ def handle_dhl(fullpath, select_filename, tipps_value, root, progressbar):
         price4 = 0
         # print(new_ws.cell(i, 6).value)
         # print("DHL德国非FBA" + str(new_ws.cell(i, 6).value.find("DHL德国非FBA")))
-        if str(new_ws.cell(i, 6).value).find("DHL德国非FBA") > -1:
-            if str(new_ws.cell(i, 5).value) == "HELIOCARGO":
-                if 0 < weight <= 1:
-                    price3 = 3.75
-                elif 1 < weight <= 2:
-                    price3 = 4.09
-                elif 2 < weight <= 3:
-                    price3 = 4.15
-                elif 3 < weight <= 5:
-                    price3 = 4.83
-                elif 5 < weight <= 15:
-                    price3 = 4.78
-                elif 15 < weight <= 25:
-                    price3 = 5.18
-                elif 25 < weight <= 31.5:
-                    price3 = 5.86
-            elif str(new_ws.cell(i, 5).value) == "RONG":
-                if 0 < weight <= 1:
-                    price3 = 3.75
-                elif 1 < weight <= 2:
-                    price3 = 4.09
-                elif 2 < weight <= 3:
-                    price3 = 4.15
-                elif 3 < weight <= 5:
-                    price3 = 4.83
-                elif 5 < weight <= 15:
-                    price3 = 4.78
-                elif 15 < weight <= 25:
-                    price3 = 5.18
-                elif 25 < weight <= 31.5:
-                    price3 = 5.86
-            elif str(new_ws.cell(i, 5).value) == "RGG-海外仓":
-                if 0 < weight <= 1:
-                    price3 = 3.75
-                elif 1 < weight <= 2:
-                    price3 = 4.09
-                elif 2 < weight <= 3:
-                    price3 = 4.15
-                elif 3 < weight <= 15:
-                    price3 = 4.83
-                elif 15 < weight <= 25:
-                    price3 = 5.18
-                elif 25 < weight <= 31.5:
-                    price3 = 5.86
-            price4 = price3
+        if str(new_ws.cell(1, 29).value) == "K5打单时间":
+            if datetime.strptime(str(new_ws.cell(i, 29).value), "%Y-%m-%d %H:%M:%S") < datetime(2024, 1, 1):
 
-        elif str(new_ws.cell(i, 6).value).find("DHL德国FBA") > -1:
-            if str(new_ws.cell(i, 5).value) == "HELIOCARGO":
-                if 0 < weight <= 20:
-                    price3 = 3.1
-                elif 20 < weight <= 31.5:
-                    price3 = 4.95
-            elif str(new_ws.cell(i, 5).value) == "RONG":
-                if 0 < weight <= 20:
-                    price3 = 3.45
-                elif 20 < weight <= 31.5:
-                    price3 = 4.95
-            elif str(new_ws.cell(i, 5).value) == "RGG-海外仓":
-                if 0 < weight <= 20:
-                    price3 = 3.45
-                elif 20 < weight <= 31.5:
-                    price3 = 4.95
-            price4 = price3
+                if str(new_ws.cell(i, 6).value).find("DHL德国非FBA") > -1:
+                    if str(new_ws.cell(i, 5).value) == "HELIOCARGO":
+                        if 0 < weight <= 1:
+                            price3 = 3.75
+                        elif 1 < weight <= 2:
+                            price3 = 4.09
+                        elif 2 < weight <= 3:
+                            price3 = 4.15
+                        elif 3 < weight <= 5:
+                            price3 = 4.83
+                        elif 5 < weight <= 15:
+                            price3 = 4.78
+                        elif 15 < weight <= 25:
+                            price3 = 5.18
+                        elif 25 < weight <= 31.5:
+                            price3 = 5.86
+                    elif str(new_ws.cell(i, 5).value) == "RONG":
+                        if 0 < weight <= 1:
+                            price3 = 3.75
+                        elif 1 < weight <= 2:
+                            price3 = 4.09
+                        elif 2 < weight <= 3:
+                            price3 = 4.15
+                        elif 3 < weight <= 5:
+                            price3 = 4.83
+                        elif 5 < weight <= 15:
+                            price3 = 4.78
+                        elif 15 < weight <= 25:
+                            price3 = 5.18
+                        elif 25 < weight <= 31.5:
+                            price3 = 5.86
+                    elif str(new_ws.cell(i, 5).value) == "RGG-海外仓":
+                        if 0 < weight <= 1:
+                            price3 = 3.75
+                        elif 1 < weight <= 2:
+                            price3 = 4.09
+                        elif 2 < weight <= 3:
+                            price3 = 4.15
+                        elif 3 < weight <= 15:
+                            price3 = 4.83
+                        elif 15 < weight <= 25:
+                            price3 = 5.18
+                        elif 25 < weight <= 31.5:
+                            price3 = 5.86
+                    price4 = price3
 
-        elif str(new_ws.cell(i, 6).value).find("DHL欧盟主要国家") > -1:
-            if str(new_ws.cell(i, 5).value) == "HELIOCARGO":
-                if str(new_ws.cell(i, 7).value) == "比利时":
-                    price1 = 6.72
-                    price2 = (weight-1)*0.23
-                elif str(new_ws.cell(i, 7).value) == "法国":
-                    price1 = 7.86
-                    price2 = (weight-1)*0.54
-                elif str(new_ws.cell(i, 7).value) == "意大利":
-                    price1 = 10.22
-                    price2 = (weight-1)*0.33
-                elif str(new_ws.cell(i, 7).value) == "卢森堡":
-                    price1 = 7.9
-                    price2 = (weight-1)*0.24
-                elif str(new_ws.cell(i, 7).value) == "荷兰":
-                    price1 = 6.39
-                    price2 = (weight-1)*0.23
-                elif str(new_ws.cell(i, 7).value) == "奥地利":
-                    price1 = 6.45
-                    price2 = (weight-1)*0.3
-                elif str(new_ws.cell(i, 7).value) == "波兰":
-                    price1 = 5.97
-                    price2 = (weight-1)*0.16
-                elif str(new_ws.cell(i, 7).value) == "瑞典":
-                    price1 = 13.83
-                    price2 = (weight-1)*0.38
-                elif str(new_ws.cell(i, 7).value) == "斯洛伐克":
-                    price1 = 5.73
-                    price2 = (weight-1)*0.56
-                elif str(new_ws.cell(i, 7).value) == "斯洛维尼亚":
-                    price1 = 6.06
-                    price2 = (weight-1)*0.33
-                elif str(new_ws.cell(i, 7).value) == "西班牙":
-                    price1 = 9.33
-                    price2 = (weight-1)*0.5
-                elif str(new_ws.cell(i, 7).value) == "捷克":
-                    price1 = 4.89
-                    price2 = (weight-1)*0.24
-            elif new_ws.cell(i, 5).value == "RONG":
-                if str(new_ws.cell(i, 7).value) == "比利时":
-                    price1 = 6.72
-                    price2 = (weight-1)*0.23
-                elif str(new_ws.cell(i, 7).value) == "法国":
-                    price1 = 8.73
-                    price2 = (weight-1)*0.6
-                elif str(new_ws.cell(i, 7).value) == "意大利":
-                    price1 = 10.22
-                    price2 = (weight-1)*0.33
-                elif str(new_ws.cell(i, 7).value) == "卢森堡":
-                    price1 = 7.9
-                    price2 = (weight-1)*0.24
-                elif str(new_ws.cell(i, 7).value) == "荷兰":
-                    price1 = 6.39
-                    price2 = (weight-1)*0.23
-                elif str(new_ws.cell(i, 7).value) == "奥地利":
-                    price1 = 6.45
-                    price2 = (weight-1)*0.3
-                elif str(new_ws.cell(i, 7).value) == "波兰":
-                    price1 = 5.97
-                    price2 = (weight-1)*0.16
-                elif str(new_ws.cell(i, 7).value) == "瑞典":
-                    price1 = 13.83
-                    price2 = (weight-1)*0.38
-                elif str(new_ws.cell(i, 7).value) == "斯洛伐克":
-                    price1 = 5.73
-                    price2 = (weight-1)*0.56
-                elif str(new_ws.cell(i, 7).value) == "斯洛维尼亚":
-                    price1 = 6.06
-                    price2 = (weight-1)*0.33
-                elif str(new_ws.cell(i, 7).value) == "西班牙":
-                    price1 = 9.33
-                    price2 = (weight-1)*0.5
-                elif str(new_ws.cell(i, 7).value) == "捷克":
-                    price1 = 4.89
-                    price2 = (weight-1)*0.24
-            elif new_ws.cell(i, 5).value == "RGG-海外仓":
-                if str(new_ws.cell(i, 7).value) == "比利时":
-                    price1 = 6.72
-                    price2 = (weight-1)*0.23
-                elif str(new_ws.cell(i, 7).value) == "法国":
-                    price1 = 8.73
-                    price2 = (weight-1)*0.6
-                elif str(new_ws.cell(i, 7).value) == "意大利":
-                    price1 = 10.22
-                    price2 = (weight-1)*0.33
-                elif str(new_ws.cell(i, 7).value) == "卢森堡":
-                    price1 = 7.9
-                    price2 = (weight-1)*0.24
-                elif str(new_ws.cell(i, 7).value) == "荷兰":
-                    price1 = 6.39
-                    price2 = (weight-1)*0.23
-                elif str(new_ws.cell(i, 7).value) == "奥地利":
-                    price1 = 6.45
-                    price2 = (weight-1)*0.3
-                elif str(new_ws.cell(i, 7).value) == "波兰":
-                    price1 = 5.97
-                    price2 = (weight-1)*0.16
-                elif str(new_ws.cell(i, 7).value) == "瑞典":
-                    price1 = 13.83
-                    price2 = (weight-1)*0.38
-                elif str(new_ws.cell(i, 7).value) == "斯洛伐克":
-                    price1 = 5.73
-                    price2 = (weight-1)*0.56
-                elif str(new_ws.cell(i, 7).value) == "斯洛维尼亚":
-                    price1 = 6.06
-                    price2 = (weight-1)*0.33
-                elif str(new_ws.cell(i, 7).value) == "西班牙":
-                    price1 = 9.33
-                    price2 = (weight-1)*0.5
-                elif str(new_ws.cell(i, 7).value) == "捷克":
-                    price1 = 4.89
-                    price2 = (weight-1)*0.24
-            price4 = price1+price2
+                elif str(new_ws.cell(i, 6).value).find("DHL德国FBA") > -1:
+                    if str(new_ws.cell(i, 5).value) == "HELIOCARGO":
+                        if 0 < weight <= 20:
+                            price3 = 3.1
+                        elif 20 < weight <= 31.5:
+                            price3 = 4.95
+                    elif str(new_ws.cell(i, 5).value) == "RONG":
+                        if 0 < weight <= 20:
+                            price3 = 3.45
+                        elif 20 < weight <= 31.5:
+                            price3 = 4.95
+                    elif str(new_ws.cell(i, 5).value) == "RGG-海外仓":
+                        if 0 < weight <= 20:
+                            price3 = 3.45
+                        elif 20 < weight <= 31.5:
+                            price3 = 4.95
+                    price4 = price3
+
+                elif str(new_ws.cell(i, 6).value).find("DHL欧盟主要国家") > -1:
+                    if str(new_ws.cell(i, 5).value) == "HELIOCARGO":
+                        if str(new_ws.cell(i, 7).value) == "比利时":
+                            price1 = 6.72
+                            price2 = (weight-1)*0.23
+                        elif str(new_ws.cell(i, 7).value) == "法国":
+                            price1 = 7.86
+                            price2 = (weight-1)*0.54
+                        elif str(new_ws.cell(i, 7).value) == "意大利":
+                            price1 = 10.22
+                            price2 = (weight-1)*0.33
+                        elif str(new_ws.cell(i, 7).value) == "卢森堡":
+                            price1 = 7.9
+                            price2 = (weight-1)*0.24
+                        elif str(new_ws.cell(i, 7).value) == "荷兰":
+                            price1 = 6.39
+                            price2 = (weight-1)*0.23
+                        elif str(new_ws.cell(i, 7).value) == "奥地利":
+                            price1 = 6.45
+                            price2 = (weight-1)*0.3
+                        elif str(new_ws.cell(i, 7).value) == "波兰":
+                            price1 = 5.97
+                            price2 = (weight-1)*0.16
+                        elif str(new_ws.cell(i, 7).value) == "瑞典":
+                            price1 = 13.83
+                            price2 = (weight-1)*0.38
+                        elif str(new_ws.cell(i, 7).value) == "斯洛伐克":
+                            price1 = 5.73
+                            price2 = (weight-1)*0.56
+                        elif str(new_ws.cell(i, 7).value) == "斯洛维尼亚":
+                            price1 = 6.06
+                            price2 = (weight-1)*0.33
+                        elif str(new_ws.cell(i, 7).value) == "西班牙":
+                            price1 = 9.33
+                            price2 = (weight-1)*0.5
+                        elif str(new_ws.cell(i, 7).value) == "捷克":
+                            price1 = 4.89
+                            price2 = (weight-1)*0.24
+                    elif new_ws.cell(i, 5).value == "RONG":
+                        if str(new_ws.cell(i, 7).value) == "比利时":
+                            price1 = 6.72
+                            price2 = (weight-1)*0.23
+                        elif str(new_ws.cell(i, 7).value) == "法国":
+                            price1 = 8.73
+                            price2 = (weight-1)*0.6
+                        elif str(new_ws.cell(i, 7).value) == "意大利":
+                            price1 = 10.22
+                            price2 = (weight-1)*0.33
+                        elif str(new_ws.cell(i, 7).value) == "卢森堡":
+                            price1 = 7.9
+                            price2 = (weight-1)*0.24
+                        elif str(new_ws.cell(i, 7).value) == "荷兰":
+                            price1 = 6.39
+                            price2 = (weight-1)*0.23
+                        elif str(new_ws.cell(i, 7).value) == "奥地利":
+                            price1 = 6.45
+                            price2 = (weight-1)*0.3
+                        elif str(new_ws.cell(i, 7).value) == "波兰":
+                            price1 = 5.97
+                            price2 = (weight-1)*0.16
+                        elif str(new_ws.cell(i, 7).value) == "瑞典":
+                            price1 = 13.83
+                            price2 = (weight-1)*0.38
+                        elif str(new_ws.cell(i, 7).value) == "斯洛伐克":
+                            price1 = 5.73
+                            price2 = (weight-1)*0.56
+                        elif str(new_ws.cell(i, 7).value) == "斯洛维尼亚":
+                            price1 = 6.06
+                            price2 = (weight-1)*0.33
+                        elif str(new_ws.cell(i, 7).value) == "西班牙":
+                            price1 = 9.33
+                            price2 = (weight-1)*0.5
+                        elif str(new_ws.cell(i, 7).value) == "捷克":
+                            price1 = 4.89
+                            price2 = (weight-1)*0.24
+                    elif new_ws.cell(i, 5).value == "RGG-海外仓":
+                        if str(new_ws.cell(i, 7).value) == "比利时":
+                            price1 = 6.72
+                            price2 = (weight-1)*0.23
+                        elif str(new_ws.cell(i, 7).value) == "法国":
+                            price1 = 8.73
+                            price2 = (weight-1)*0.6
+                        elif str(new_ws.cell(i, 7).value) == "意大利":
+                            price1 = 10.22
+                            price2 = (weight-1)*0.33
+                        elif str(new_ws.cell(i, 7).value) == "卢森堡":
+                            price1 = 7.9
+                            price2 = (weight-1)*0.24
+                        elif str(new_ws.cell(i, 7).value) == "荷兰":
+                            price1 = 6.39
+                            price2 = (weight-1)*0.23
+                        elif str(new_ws.cell(i, 7).value) == "奥地利":
+                            price1 = 6.45
+                            price2 = (weight-1)*0.3
+                        elif str(new_ws.cell(i, 7).value) == "波兰":
+                            price1 = 5.97
+                            price2 = (weight-1)*0.16
+                        elif str(new_ws.cell(i, 7).value) == "瑞典":
+                            price1 = 13.83
+                            price2 = (weight-1)*0.38
+                        elif str(new_ws.cell(i, 7).value) == "斯洛伐克":
+                            price1 = 5.73
+                            price2 = (weight-1)*0.56
+                        elif str(new_ws.cell(i, 7).value) == "斯洛维尼亚":
+                            price1 = 6.06
+                            price2 = (weight-1)*0.33
+                        elif str(new_ws.cell(i, 7).value) == "西班牙":
+                            price1 = 9.33
+                            price2 = (weight-1)*0.5
+                        elif str(new_ws.cell(i, 7).value) == "捷克":
+                            price1 = 4.89
+                            price2 = (weight-1)*0.24
+                    price4 = price1+price2
+            elif datetime.strptime(str(new_ws.cell(i, 29).value), "%Y-%m-%d %H:%M:%S") < datetime(2024, 3, 6):
+                if str(new_ws.cell(i, 6).value).find("DHL德国非FBA") > -1:
+                    if 0 < weight <= 1:
+                        price3 = 3.99
+                    elif 1 < weight <= 2:
+                        price3 = 4.29
+                    elif 2 < weight <= 3:
+                        price3 = 4.39
+                    elif 3 < weight <= 5:
+                        price3 = 4.99
+                    elif 5 < weight <= 8:
+                        price3 = 5.39
+                    elif 8 < weight <= 15:
+                        price3 = 5.99
+                    elif 15 < weight <= 30:
+                        price3 = 6.59
+                    price4 = price3
+
+                elif str(new_ws.cell(i, 6).value).find("DHL德国FBA") > -1:
+                    if str(new_ws.cell(i, 5).value) == "HELIOCARGO":
+                        if 0 < weight <= 20:
+                            price3 = 3.45
+                        elif 20 < weight <= 25:
+                            price3 = 4.45
+                        elif 25 < weight <= 31.5:
+                            price3 = 5.45
+                    price4 = price3
+
+                elif str(new_ws.cell(i, 6).value).find("DHL欧盟主要国家") > -1:
+                    if str(new_ws.cell(i, 7).value) == "比利时":
+                        price1 = 6.90
+                        price2 = (weight - 1) * 0.3
+                    elif str(new_ws.cell(i, 7).value) == "法国":
+                        price1 = 8.8
+                        price2 = (weight - 1) * 0.7
+                    elif str(new_ws.cell(i, 7).value) == "意大利":
+                        price1 = 10.5
+                        price2 = (weight - 1) * 0.4
+                    elif str(new_ws.cell(i, 7).value) == "卢森堡":
+                        price1 = 7.9
+                        price2 = (weight - 1) * 0.3
+                    elif str(new_ws.cell(i, 7).value) == "荷兰":
+                        price1 = 6.9
+                        price2 = (weight - 1) * 0.3
+                    elif str(new_ws.cell(i, 7).value) == "奥地利":
+                        price1 = 6.6
+                        price2 = (weight - 1) * 0.4
+                    elif str(new_ws.cell(i, 7).value) == "波兰":
+                        price1 = 6.0
+                        price2 = (weight - 1) * 0.2
+                    elif str(new_ws.cell(i, 7).value) == "瑞典":
+                        price1 = 13.80
+                        price2 = (weight - 1) * 0.5
+                    elif str(new_ws.cell(i, 7).value) == "斯洛伐克":
+                        price1 = 5.8
+                        price2 = (weight - 1) * 0.7
+                    elif str(new_ws.cell(i, 7).value) == "斯洛维尼亚":
+                        price1 = 6.54
+                        price2 = (weight - 1) * 0.36
+                    elif str(new_ws.cell(i, 7).value) == "西班牙":
+                        price1 = 9.6
+                        price2 = (weight - 1) * 0.6
+                    elif str(new_ws.cell(i, 7).value) == "捷克":
+                        price1 = 4.90
+                        price2 = (weight - 1) * 0.3
+                    elif str(new_ws.cell(i, 7).value) == "保加利亚":
+                        price1 = 12.8
+                        price2 = (weight - 1) * 1.5
+                    elif str(new_ws.cell(i, 7).value) == "斯洛文尼亚":
+                        price1 = 5.80
+                        price2 = (weight - 1) * 0.4
+                    elif str(new_ws.cell(i, 7).value) == "丹麦":
+                        price1 = 12.90
+                        price2 = (weight - 1) * 1.2
+                    elif str(new_ws.cell(i, 7).value) == "芬兰":
+                        price1 = 17.80
+                        price2 = (weight - 1) * 1.5
+                    elif str(new_ws.cell(i, 7).value) == "爱沙尼亚":
+                        price1 = 13.80
+                        price2 = (weight - 1) * 1.5
+                    elif str(new_ws.cell(i, 7).value) == "希腊":
+                        price1 = 13.80
+                        price2 = (weight - 1) * 1.5
+                    elif str(new_ws.cell(i, 7).value) == "爱尔兰":
+                        price1 = 13.80
+                        price2 = (weight - 1) * 1.5
+                    elif str(new_ws.cell(i, 7).value) == "克罗地亚":
+                        price1 = 13.80
+                        price2 = (weight - 1) * 1.5
+                    elif str(new_ws.cell(i, 7).value) == "拉脱维亚":
+                        price1 = 13.80
+                        price2 = (weight - 1) * 1.5
+                    elif str(new_ws.cell(i, 7).value) == "立陶宛":
+                        price1 = 13.80
+                        price2 = (weight - 1) * 1.5
+                    elif str(new_ws.cell(i, 7).value) == "马耳他":
+                        price1 = 13.80
+                        price2 = (weight - 1) * 1.5
+                    elif str(new_ws.cell(i, 7).value) == "葡萄牙":
+                        price1 = 13.80
+                        price2 = (weight - 1) * 1.5
+                    elif str(new_ws.cell(i, 7).value) == "罗马尼亚":
+                        price1 = 13.80
+                        price2 = (weight - 1) * 1.5
+                    elif str(new_ws.cell(i, 7).value) == "匈牙利":
+                        price1 = 13.50
+                        price2 = (weight - 1) * 1
+                    price4 = price1 + price2
+
+            elif datetime.strptime(str(new_ws.cell(i, 29).value), "%Y-%m-%d %H:%M:%S") >= datetime(2024, 3, 6):
+                if str(new_ws.cell(i, 6).value).find("DHL德国非FBA") > -1:
+                    if 0 < weight <= 1:
+                        price3 = 3.99
+                    elif 1 < weight <= 2:
+                        price3 = 4.29
+                    elif 2 < weight <= 3:
+                        price3 = 4.39
+                    elif 3 < weight <= 5:
+                        price3 = 4.99
+                    elif 5 < weight <= 8:
+                        price3 = 5.39
+                    elif 8 < weight <= 15:
+                        price3 = 5.99
+                    elif 15 < weight <= 30:
+                        price3 = 6.59
+                    price4 = price3
+
+                elif str(new_ws.cell(i, 6).value).find("DHL德国FBA") > -1:
+                    if str(new_ws.cell(i, 5).value) == "HELIOCARGO":
+                        if 0 < weight <= 25:
+                            price3 = 3.99
+                        elif 25 < weight <= 31.5:
+                            price3 = 5.45
+                    price4 = price3
+
+                elif str(new_ws.cell(i, 6).value).find("DHL欧盟主要国家") > -1:
+                    if str(new_ws.cell(i, 7).value) == "比利时":
+                        price1 = 6.90
+                        price2 = (weight - 1) * 0.3
+                    elif str(new_ws.cell(i, 7).value) == "法国":
+                        price1 = 8.8
+                        price2 = (weight - 1) * 0.7
+                    elif str(new_ws.cell(i, 7).value) == "意大利":
+                        price1 = 10.5
+                        price2 = (weight - 1) * 0.4
+                    elif str(new_ws.cell(i, 7).value) == "卢森堡":
+                        price1 = 7.9
+                        price2 = (weight - 1) * 0.3
+                    elif str(new_ws.cell(i, 7).value) == "荷兰":
+                        price1 = 6.9
+                        price2 = (weight - 1) * 0.3
+                    elif str(new_ws.cell(i, 7).value) == "奥地利":
+                        price1 = 6.6
+                        price2 = (weight - 1) * 0.4
+                    elif str(new_ws.cell(i, 7).value) == "波兰":
+                        price1 = 6.0
+                        price2 = (weight - 1) * 0.2
+                    elif str(new_ws.cell(i, 7).value) == "瑞典":
+                        price1 = 13.80
+                        price2 = (weight - 1) * 0.5
+                    elif str(new_ws.cell(i, 7).value) == "斯洛伐克":
+                        price1 = 5.8
+                        price2 = (weight - 1) * 0.7
+                    # elif str(new_ws.cell(i, 7).value) == "斯洛维尼亚":
+                    #     price1 = 6.54
+                    #     price2 = (weight - 1) * 0.36
+                    elif str(new_ws.cell(i, 7).value) == "西班牙":
+                        price1 = 9.6
+                        price2 = (weight - 1) * 0.6
+                    elif str(new_ws.cell(i, 7).value) == "捷克":
+                        price1 = 4.90
+                        price2 = (weight - 1) * 0.3
+                    elif str(new_ws.cell(i, 7).value) == "保加利亚":
+                        price1 = 12.8
+                        price2 = (weight - 1) * 1.5
+                    elif str(new_ws.cell(i, 7).value) == "斯洛文尼亚":
+                        price1 = 5.80
+                        price2 = (weight - 1) * 0.4
+                    elif str(new_ws.cell(i, 7).value) == "丹麦":
+                        price1 = 12.90
+                        price2 = (weight - 1) * 1.2
+                    elif str(new_ws.cell(i, 7).value) == "芬兰":
+                        price1 = 17.80
+                        price2 = (weight - 1) * 1.5
+                    elif str(new_ws.cell(i, 7).value) == "爱沙尼亚":
+                        price1 = 13.80
+                        price2 = (weight - 1) * 1.5
+                    elif str(new_ws.cell(i, 7).value) == "希腊":
+                        price1 = 13.80
+                        price2 = (weight - 1) * 1.5
+                    elif str(new_ws.cell(i, 7).value) == "爱尔兰":
+                        price1 = 13.80
+                        price2 = (weight - 1) * 1.5
+                    elif str(new_ws.cell(i, 7).value) == "克罗地亚":
+                        price1 = 13.80
+                        price2 = (weight - 1) * 1.5
+                    elif str(new_ws.cell(i, 7).value) == "拉脱维亚":
+                        price1 = 13.80
+                        price2 = (weight - 1) * 1.5
+                    elif str(new_ws.cell(i, 7).value) == "立陶宛":
+                        price1 = 13.80
+                        price2 = (weight - 1) * 1.5
+                    elif str(new_ws.cell(i, 7).value) == "马耳他":
+                        price1 = 13.80
+                        price2 = (weight - 1) * 1.5
+                    elif str(new_ws.cell(i, 7).value) == "葡萄牙":
+                        price1 = 13.80
+                        price2 = (weight - 1) * 1.5
+                    elif str(new_ws.cell(i, 7).value) == "罗马尼亚":
+                        price1 = 13.80
+                        price2 = (weight - 1) * 1.5
+                    elif str(new_ws.cell(i, 7).value) == "匈牙利":
+                        price1 = 13.50
+                        price2 = (weight - 1) * 1
+                    price4 = price1 + price2
 
         new_ws.cell(i, len(col_list) + 1).value = price1
         new_ws.cell(i, len(col_list) + 2).value = price2

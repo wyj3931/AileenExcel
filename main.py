@@ -5,6 +5,7 @@ import os
 import time
 
 from dhl import handle_dhl
+from dhl2 import handle_dhl2
 from ups import handle_ups
 from k5 import handle_k5
 from wlyups import handle_wlyups
@@ -43,6 +44,7 @@ def handle():
     radio2['state'] = 'disable'
     radio3['state'] = 'disable'
     radio4['state'] = 'disable'
+    radio5['state'] = 'disable'
 
     # print("start")
     start_time = time.time()
@@ -56,6 +58,8 @@ def handle():
         result = handle_wlyups(fullpath, select_filename, tipps_value, root, progressbar)
     elif radio.get() == 4:
         result = handle_dhl(fullpath, select_filename, tipps_value, root, progressbar)
+    elif radio.get() == 5:
+        result = handle_dhl2(fullpath, select_filename, tipps_value, root, progressbar)
 
     if result == 'finish':
         end_time = time.time()
@@ -69,6 +73,7 @@ def handle():
     radio2['state'] = 'normal'
     radio3['state'] = 'normal'
     radio4['state'] = 'normal'
+    radio5['state'] = 'normal'
 
 
 # Press the green button in the gutter to run the script.
@@ -103,6 +108,9 @@ if __name__ == '__main__':
 
     radio4 = tk.Radiobutton(root, text="DHL", variable=radio, value=4)
     radio4.grid(row=0, column=4, pady=(10, 0))
+
+    radio5 = tk.Radiobutton(root, text="DHL(2)", variable=radio, value=5)
+    radio5.grid(row=0, column=5, pady=(10, 0))
 
     file_button = tk.Button(root, text="选择文件", command=select_file, width=10)
     file_button.grid(row=1, column=0, padx=(10, 0), pady=10)
