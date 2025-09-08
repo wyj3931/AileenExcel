@@ -21,6 +21,17 @@ def select_file(*args):
     entry1.insert(0, select_filename)
     entry1.configure(state='readonly')
 
+def select_dhl_price_file(*args):
+    # 单个文件选择
+    selected_dhl_price_file_path = filedialog.askopenfilename(
+        filetypes=[("Excel files", ("*.xlsx", "*.xlsm"))])  # 使用askopenfilename函数选择单个文件
+    select_dhl_price_path.set(selected_dhl_price_file_path)
+    global select_dhl_price_filename
+    select_dhl_price_filename = os.path.split(str(select_dhl_price_path.get()))[1]
+    entry2.configure(state='normal')
+    entry2.delete(0, tk.END)
+    entry2.insert(0, select_dhl_price_filename)
+    entry2.configure(state='readonly')
 
 def handle():
     #  更新界面processbar
@@ -28,6 +39,7 @@ def handle():
     root.update()
 
     fullpath = str(select_path.get())
+    dhl_price_fullpath = str(select_dhl_price_path.get())
 
     if fullpath == '':
         tipps_value.set('提示:请选择文件')
@@ -39,6 +51,7 @@ def handle():
 
     handle_button['state'] = 'disable'
     file_button['state'] = 'disable'
+    price_button['state'] = 'disable'
     radio1['state'] = 'disable'
     radio2['state'] = 'disable'
     radio3['state'] = 'disable'
@@ -55,7 +68,7 @@ def handle():
     elif radio.get() == 3:
         result = handle_wlyups(fullpath, select_filename, tipps_value, root, progressbar)
     elif radio.get() == 4:
-        result = handle_dhl(fullpath, select_filename, tipps_value, root, progressbar)
+        result = handle_dhl(fullpath, select_filename, tipps_value, root, progressbar, dhl_price_fullpath, select_dhl_price_filename)
 
     if result == 'finish':
         end_time = time.time()
@@ -65,6 +78,7 @@ def handle():
 
     handle_button['state'] = 'normal'
     file_button['state'] = 'normal'
+    price_button['state'] = 'normal'
     radio1['state'] = 'normal'
     radio2['state'] = 'normal'
     radio3['state'] = 'normal'
@@ -75,12 +89,15 @@ def handle():
 if __name__ == '__main__':
     root = tk.Tk()
     root.title("Excel账单处理程序")
-    root.geometry("500x180")
+    root.geometry("500x230")
     root.resizable(width=False, height=False)
 
     # 初始化Entry控件的textvariable属性值
     select_path = tk.StringVar()
     select_filename = ''
+
+    select_dhl_price_path = tk.StringVar()
+    select_dhl_price_filename = ''
 
     radio = tk.IntVar()
     radio.set(1)
@@ -110,15 +127,21 @@ if __name__ == '__main__':
     entry1 = tk.Entry(root, textvariable=select_filename, width=25, state='readonly')
     entry1.grid(row=1, column=1, columnspan=5, padx=(10, 0), pady=10, sticky="n,s")
 
+    price_button = tk.Button(root, text="DHL价格", command=select_dhl_price_file, width=10)
+    price_button.grid(row=2, column=0, padx=(10, 0), pady=10)
+
+    entry2 = tk.Entry(root, textvariable=select_dhl_price_filename, width=25, state='readonly')
+    entry2.grid(row=2, column=1, columnspan=5, padx=(10, 0), pady=10, sticky="n,s")
+
     handle_button = tk.Button(root, text="开始处理", command=handle, width=10)
-    handle_button.grid(row=2, column=0, padx=(10, 0))
+    handle_button.grid(row=3, column=0, padx=(10, 0))
 
     progressbar = ttk.Progressbar(root, value=0, length=180, maximum=lines, mode="determinate",
                                   orient=tk.HORIZONTAL)
-    progressbar.grid(row=2, column=1, columnspan=5, padx=(10, 0), pady=10, ipady=4)
+    progressbar.grid(row=3, column=1, columnspan=5, padx=(10, 0), pady=10, ipady=4)
 
     tipps = tk.Label(root, textvariable=tipps_value)
-    tipps.grid(row=3, column=0, columnspan=6, padx=(20, 0), pady=10, sticky="W")
+    tipps.grid(row=4, column=0, columnspan=6, padx=(20, 0), pady=10, sticky="W")
 
     # tk.Button(root, text="选择多个文件", command=select_files).grid(row=1, column=2)
     # tk.Button(root, text="选择文件夹", command=select_folder).grid(row=2, column=2)

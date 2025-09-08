@@ -1,9 +1,47 @@
 import os
+
+import openpyxl
 from openpyxl import load_workbook
 
 
+def load_workbook_price(filename, sheet_name):
+    workbook = openpyxl.load_workbook(filename)
+    sheet = workbook[sheet_name]
+    return sheet
 
-def handle_dhl(fullpath, select_filename, tipps_value, root, progressbar):
+
+# 提取数据并返回列表的列表形式
+def extract_data(sheet):
+    data = []
+    for row in sheet.iter_rows(values_only=True):
+        data.append(list(row))
+    return data[1:], data[0]  # 假设第一行是表头，所以从第二行开始提取数据
+
+
+# 模拟查询函数：
+def query_data(data, business_type, customer_code, weight_country):
+    rows, headers = data
+    for row in rows:
+        if row[0] == business_type and row[1] == customer_code:
+            if isinstance(weight_country, float):
+                weight_range = row[2].split('-')
+                if float(weight_range[0]) < weight_country <= float(weight_range[1]):
+                    return row[3], row[4]
+            else:
+                if row[2] == weight_country:
+                    return row[3], row[4]
+    return "查询不到报价"
+
+
+def handle_dhl(fullpath, select_filename, tipps_value, root, progressbar, dhl_price_fullpath, dhl_price):
+    # 获取dhl价格---开始
+    # 加载工作簿和工作表
+
+    wb_price = load_workbook(dhl_price_fullpath)
+    sheet_price = wb_price[wb_price.sheetnames[0]]
+    data_price = extract_data(sheet_price)
+    # 获取dhl价格---结束
+
     # openpyxl 索引从1开始
     col_list = []
     col_list1 = [('Invoice Nr', 4, 1),
@@ -52,9 +90,7 @@ def handle_dhl(fullpath, select_filename, tipps_value, root, progressbar):
     list_fee_type.append("Charge Amount")
     list_fee_type.append("Extra Charge Amount")
 
-
     # list_fee_type = ["Charge Amount", "Extra Charge Amount"]
-
 
     # 将费用类型赋值给col_list2
     m = 1
@@ -99,10 +135,10 @@ def handle_dhl(fullpath, select_filename, tipps_value, root, progressbar):
     for i in range(len(col_list)):
         new_ws.cell(1, col_list[i][2]).value = col_list[i][0]
     # 按行读取，第一行是标题行
-    for i in range(2, maxrow+1):
+    for i in range(2, maxrow + 1):
         # print("i="+str(i))
         #  更新界面processbar
-        progressbar['value'] = (i/maxrow)*100
+        progressbar['value'] = (i / maxrow) * 100
         root.update()
 
         new_max_row = new_ws.max_row
@@ -123,7 +159,8 @@ def handle_dhl(fullpath, select_filename, tipps_value, root, progressbar):
                                 ws.cell(i, col_cost).value = 0
 
                             try:
-                                new_ws.cell(new_max_row, fee[2]).value = float(new_ws.cell(new_max_row, fee[2]).value) + float(ws.cell(i, col_cost).value)
+                                new_ws.cell(new_max_row, fee[2]).value = float(
+                                    new_ws.cell(new_max_row, fee[2]).value) + float(ws.cell(i, col_cost).value)
                                 print(new_ws.cell(new_max_row, fee[2]).value)
                             except ValueError:
                                 pass
@@ -139,26 +176,26 @@ def handle_dhl(fullpath, select_filename, tipps_value, root, progressbar):
                                 ws.cell(i, col_cost).value = 0
 
                             try:
-                                new_ws.cell(new_max_row, fee[2]).value = float(new_ws.cell(new_max_row, fee[2]).value) + float(ws.cell(i, col_cost).value)
+                                new_ws.cell(new_max_row, fee[2]).value = float(
+                                    new_ws.cell(new_max_row, fee[2]).value) + float(ws.cell(i, col_cost).value)
                             except ValueError:
                                 pass
                                 # print(new_max_row)
                                 # print(fee[2])
                                 # print(new_ws.cell(new_max_row, fee[2]).value)
                                 # print(ws.cell(i, col_cost).value)
-                # print("total:"+str(col_list3[0][1]))
+                    # print("total:"+str(col_list3[0][1]))
 
-
-                    #附加费用
+                    # 附加费用
 
                     if fee[0] == ws.cell(i, 11).value:
                         new_ws.cell(new_max_row, fee[2]).value = ws.cell(i, col_cost).value
 
-
                 if ws.cell(i, col_list3[0][1]).value != 0:
                     # 主单号总金额
 
-                    new_ws.cell(new_max_row, col_list3[0][2]).value = float(new_ws.cell(new_max_row, col_list3[0][2]).value) + float(ws.cell(i, col_list3[0][1]).value)
+                    new_ws.cell(new_max_row, col_list3[0][2]).value = float(
+                        new_ws.cell(new_max_row, col_list3[0][2]).value) + float(ws.cell(i, col_list3[0][1]).value)
                     # print(new_ws.cell(new_max_row, col_list3[0][2]).value, " + ", float(ws.cell(i, col_list3[0][1]).value))
 
 
@@ -168,10 +205,12 @@ def handle_dhl(fullpath, select_filename, tipps_value, root, progressbar):
                 for fee in col_list2:
                     if fee[0] == "Charge Amount":
                         if ws.cell(i, col_old_charge_amount).value is not None:
-                            new_ws.cell(new_max_row + 1, fee[2]).value = ws.cell(i, col_cost).value
+                            if ws.cell(i, col_old_charge_amount).value != '':
+                                new_ws.cell(new_max_row + 1, fee[2]).value = ws.cell(i, col_cost).value
                     if fee[0] == "Extra Charge Amount":
                         if ws.cell(i, col_old_extra_charge_amount).value is not None:
-                            new_ws.cell(new_max_row + 1, fee[2]).value = ws.cell(i, col_cost).value
+                            if ws.cell(i, col_old_extra_charge_amount).value != '':
+                                new_ws.cell(new_max_row + 1, fee[2]).value = ws.cell(i, col_cost).value
                 for x in range(len(col_list3)):
                     new_ws.cell(new_max_row + 1, col_list3[x][2]).value = ws.cell(i, col_list3[x][1]).value
                 # print(ws.cell(i, 53).value)
@@ -201,190 +240,39 @@ def handle_dhl(fullpath, select_filename, tipps_value, root, progressbar):
     for i in range(2, new_ws.max_row + 1):
         if new_ws.cell(i, 13).value is None:
             continue
+        if new_ws.cell(i, 13).value == '':
+            continue
         weight = float(new_ws.cell(i, 13).value)
         price1 = 0
         price2 = 0
         price3 = 0
         price4 = 0
-        # print(new_ws.cell(i, 6).value)
-        # print("DHL德国非FBA" + str(new_ws.cell(i, 6).value.find("DHL德国非FBA")))
+
+        # 客户代码
+        customer_code = str(new_ws.cell(i, 5).value)
+        if str(new_ws.cell(i, 5).value) == 'rong02-DHL':
+            customer_code = "RONG"
+        elif str(new_ws.cell(i, 5).value) == 'RGG-退货运单':
+            customer_code = "RGG"
+
+        # 根据发货渠道计算费用
         if str(new_ws.cell(i, 6).value).find("DHL德国非FBA") > -1:
-            if str(new_ws.cell(i, 5).value) == "HELIOCARGO":
-                if 0 < weight <= 1:
-                    price3 = 3.75
-                elif 1 < weight <= 2:
-                    price3 = 4.09
-                elif 2 < weight <= 3:
-                    price3 = 4.15
-                elif 3 < weight <= 5:
-                    price3 = 4.83
-                elif 5 < weight <= 15:
-                    price3 = 4.78
-                elif 15 < weight <= 25:
-                    price3 = 5.18
-                elif 25 < weight <= 31.5:
-                    price3 = 5.86
-            elif str(new_ws.cell(i, 5).value) == "RONG":
-                if 0 < weight <= 1:
-                    price3 = 3.75
-                elif 1 < weight <= 2:
-                    price3 = 4.09
-                elif 2 < weight <= 3:
-                    price3 = 4.15
-                elif 3 < weight <= 5:
-                    price3 = 4.83
-                elif 5 < weight <= 15:
-                    price3 = 4.78
-                elif 15 < weight <= 25:
-                    price3 = 5.18
-                elif 25 < weight <= 31.5:
-                    price3 = 5.86
-            elif str(new_ws.cell(i, 5).value) == "RGG-海外仓":
-                if 0 < weight <= 1:
-                    price3 = 3.75
-                elif 1 < weight <= 2:
-                    price3 = 4.09
-                elif 2 < weight <= 3:
-                    price3 = 4.15
-                elif 3 < weight <= 15:
-                    price3 = 4.83
-                elif 15 < weight <= 25:
-                    price3 = 5.18
-                elif 25 < weight <= 31.5:
-                    price3 = 5.86
+            business_type = "DHL德国非FBA"
+            price3 = query_data(data_price, business_type, customer_code, weight)[0]
             price4 = price3
-
         elif str(new_ws.cell(i, 6).value).find("DHL德国FBA") > -1:
-            if str(new_ws.cell(i, 5).value) == "HELIOCARGO":
-                if 0 < weight <= 20:
-                    price3 = 3.1
-                elif 20 < weight <= 31.5:
-                    price3 = 4.95
-            elif str(new_ws.cell(i, 5).value) == "RONG":
-                if 0 < weight <= 20:
-                    price3 = 3.45
-                elif 20 < weight <= 31.5:
-                    price3 = 4.95
-            elif str(new_ws.cell(i, 5).value) == "RGG-海外仓":
-                if 0 < weight <= 20:
-                    price3 = 3.45
-                elif 20 < weight <= 31.5:
-                    price3 = 4.95
+            business_type = "DHL德国FBA"
+            price3 = query_data(data_price, business_type, customer_code, weight)[0]
             price4 = price3
-
         elif str(new_ws.cell(i, 6).value).find("DHL欧盟主要国家") > -1:
-            if str(new_ws.cell(i, 5).value) == "HELIOCARGO":
-                if str(new_ws.cell(i, 7).value) == "比利时":
-                    price1 = 6.72
-                    price2 = (weight-1)*0.23
-                elif str(new_ws.cell(i, 7).value) == "法国":
-                    price1 = 7.86
-                    price2 = (weight-1)*0.54
-                elif str(new_ws.cell(i, 7).value) == "意大利":
-                    price1 = 10.22
-                    price2 = (weight-1)*0.33
-                elif str(new_ws.cell(i, 7).value) == "卢森堡":
-                    price1 = 7.9
-                    price2 = (weight-1)*0.24
-                elif str(new_ws.cell(i, 7).value) == "荷兰":
-                    price1 = 6.39
-                    price2 = (weight-1)*0.23
-                elif str(new_ws.cell(i, 7).value) == "奥地利":
-                    price1 = 6.45
-                    price2 = (weight-1)*0.3
-                elif str(new_ws.cell(i, 7).value) == "波兰":
-                    price1 = 5.97
-                    price2 = (weight-1)*0.16
-                elif str(new_ws.cell(i, 7).value) == "瑞典":
-                    price1 = 13.83
-                    price2 = (weight-1)*0.38
-                elif str(new_ws.cell(i, 7).value) == "斯洛伐克":
-                    price1 = 5.73
-                    price2 = (weight-1)*0.56
-                elif str(new_ws.cell(i, 7).value) == "斯洛维尼亚":
-                    price1 = 6.06
-                    price2 = (weight-1)*0.33
-                elif str(new_ws.cell(i, 7).value) == "西班牙":
-                    price1 = 9.33
-                    price2 = (weight-1)*0.5
-                elif str(new_ws.cell(i, 7).value) == "捷克":
-                    price1 = 4.89
-                    price2 = (weight-1)*0.24
-            elif new_ws.cell(i, 5).value == "RONG":
-                if str(new_ws.cell(i, 7).value) == "比利时":
-                    price1 = 6.72
-                    price2 = (weight-1)*0.23
-                elif str(new_ws.cell(i, 7).value) == "法国":
-                    price1 = 8.73
-                    price2 = (weight-1)*0.6
-                elif str(new_ws.cell(i, 7).value) == "意大利":
-                    price1 = 10.22
-                    price2 = (weight-1)*0.33
-                elif str(new_ws.cell(i, 7).value) == "卢森堡":
-                    price1 = 7.9
-                    price2 = (weight-1)*0.24
-                elif str(new_ws.cell(i, 7).value) == "荷兰":
-                    price1 = 6.39
-                    price2 = (weight-1)*0.23
-                elif str(new_ws.cell(i, 7).value) == "奥地利":
-                    price1 = 6.45
-                    price2 = (weight-1)*0.3
-                elif str(new_ws.cell(i, 7).value) == "波兰":
-                    price1 = 5.97
-                    price2 = (weight-1)*0.16
-                elif str(new_ws.cell(i, 7).value) == "瑞典":
-                    price1 = 13.83
-                    price2 = (weight-1)*0.38
-                elif str(new_ws.cell(i, 7).value) == "斯洛伐克":
-                    price1 = 5.73
-                    price2 = (weight-1)*0.56
-                elif str(new_ws.cell(i, 7).value) == "斯洛维尼亚":
-                    price1 = 6.06
-                    price2 = (weight-1)*0.33
-                elif str(new_ws.cell(i, 7).value) == "西班牙":
-                    price1 = 9.33
-                    price2 = (weight-1)*0.5
-                elif str(new_ws.cell(i, 7).value) == "捷克":
-                    price1 = 4.89
-                    price2 = (weight-1)*0.24
-            elif new_ws.cell(i, 5).value == "RGG-海外仓":
-                if str(new_ws.cell(i, 7).value) == "比利时":
-                    price1 = 6.72
-                    price2 = (weight-1)*0.23
-                elif str(new_ws.cell(i, 7).value) == "法国":
-                    price1 = 8.73
-                    price2 = (weight-1)*0.6
-                elif str(new_ws.cell(i, 7).value) == "意大利":
-                    price1 = 10.22
-                    price2 = (weight-1)*0.33
-                elif str(new_ws.cell(i, 7).value) == "卢森堡":
-                    price1 = 7.9
-                    price2 = (weight-1)*0.24
-                elif str(new_ws.cell(i, 7).value) == "荷兰":
-                    price1 = 6.39
-                    price2 = (weight-1)*0.23
-                elif str(new_ws.cell(i, 7).value) == "奥地利":
-                    price1 = 6.45
-                    price2 = (weight-1)*0.3
-                elif str(new_ws.cell(i, 7).value) == "波兰":
-                    price1 = 5.97
-                    price2 = (weight-1)*0.16
-                elif str(new_ws.cell(i, 7).value) == "瑞典":
-                    price1 = 13.83
-                    price2 = (weight-1)*0.38
-                elif str(new_ws.cell(i, 7).value) == "斯洛伐克":
-                    price1 = 5.73
-                    price2 = (weight-1)*0.56
-                elif str(new_ws.cell(i, 7).value) == "斯洛维尼亚":
-                    price1 = 6.06
-                    price2 = (weight-1)*0.33
-                elif str(new_ws.cell(i, 7).value) == "西班牙":
-                    price1 = 9.33
-                    price2 = (weight-1)*0.5
-                elif str(new_ws.cell(i, 7).value) == "捷克":
-                    price1 = 4.89
-                    price2 = (weight-1)*0.24
-            price4 = price1+price2
+            business_type = "DHL欧盟主要国家"
+            weight_country = str(new_ws.cell(i, 7).value)
+
+            price = query_data(data_price, business_type, customer_code, weight_country)
+            price1 = float(price[0])
+            price2 = float(price[1])
+            price2 = (weight - 1) * price2
+            price4 = price1 + price2
 
         new_ws.cell(i, len(col_list) + 1).value = price1
         new_ws.cell(i, len(col_list) + 2).value = price2
